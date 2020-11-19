@@ -7,7 +7,6 @@
 
 #define DEVICE_NAME "dummy"
 #define MAJOR_NUM 42
-#define NUM_DEVICES 4
 
 static struct class *dummy_class;
 
@@ -53,20 +52,17 @@ struct file_operations dummy_fops = {
 int __init dummy_init(void)
 {
 	int ret;
-	int i;
 
-	printk("Dummy loaded\n");
+	printk("Module X loaded\n");
 	ret = register_chrdev(MAJOR_NUM, DEVICE_NAME, &dummy_fops);
 	if (ret != 0)
 		return ret;
 
 	dummy_class = class_create(THIS_MODULE, DEVICE_NAME);
-	for (i = 0; i < NUM_DEVICES; i++) {
-		device_create(dummy_class, NULL,
-			      MKDEV(MAJOR_NUM, i), NULL, "dummy%d", i);
-	}
 
-    // Is the GPIO a valid GPIO number (e.g., the BBB has 4x32 but not all available)
+	device_create(dummy_class, NULL, MKDEV(MAJOR_NUM, 0), NULL, "dummy%d", 0);
+
+    // Is the GPIO a valid GPIO number
     if (!gpio_is_valid(gpioLED)){
         printk(KERN_INFO "GPIO_TEST: invalid LED GPIO\n");
         return -ENODEV;
@@ -76,32 +72,25 @@ int __init dummy_init(void)
     gpio_request(gpioLED, "sysfs");          // gpioLED is hardcoded to 49, request it
     gpio_direction_output(gpioLED, ledOn);   // Set the gpio to be in output mode and on
     // gpio_set_value(gpioLED, ledOn);          // Not required as set by line above (here for reference)
-    gpio_export(gpioLED, false);             // Causes gpio49 to appear in /sys/class/gpio
-                                // the bool argument prevents the direction from being changed
-                                // the bool argument prevents the direction from being changed
+    gpio_export(gpioLED, false);             // Causes gpio to appear in /sys/class/gpio
 
 	return 0;
 }
 
 void __exit dummy_exit(void)
 {
-	int i;
-
-	for (i = 0; i < NUM_DEVICES; i++) {
-		device_destroy(dummy_class, MKDEV(MAJOR_NUM, i));
-	}
+	device_destroy(dummy_class, MKDEV(MAJOR_NUM, 0));
 	class_destroy(dummy_class);
 
 	unregister_chrdev(MAJOR_NUM, DEVICE_NAME);
-	printk("Dummy unloaded\n");
-   gpio_set_value(gpioLED, 0);              // Turn the LED off, makes it clear the device was unloaded
-   gpio_unexport(gpioLED);                  // Unexport the LED GPIO
-   gpio_free(gpioLED);                      // Free the LED GPIO
-   printk(KERN_INFO "GPIO_TEST: Goodbye from the LKM!\n");
+    gpio_set_value(gpioLED, 0);              // Turn the LED off
+    gpio_unexport(gpioLED);                  // Unexport the LED GPIO
+    gpio_free(gpioLED);                      // Free the LED GPIO
+    printk(KERN_INFO "Module X going down\n");
 }
 
 module_init(dummy_init);
 module_exit(dummy_exit);
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Chris Simmonds");
-MODULE_DESCRIPTION("A dummy driver");
+MODULE_AUTHOR("Karol Przybylski");
+MODULE_DESCRIPTION("A simple GPIO driver");
