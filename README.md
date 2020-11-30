@@ -1,5 +1,11 @@
 # drivers_fun
 
+## Running examples
+
+From the Makefile directory, as superuser
+$ make all
+$ insmod <NAME>.ko
+$ dmesg #check if information is printed 
 
 
 
