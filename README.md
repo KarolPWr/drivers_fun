@@ -2,11 +2,11 @@
 
 ## Running examples
 
-From the Makefile directory, as superuser
-$ make all
-$ insmod <NAME>.ko
-$ dmesg #check if information is printed 
-
+From the Makefile directory, as superuser  
+$ make all  
+$ insmod <NAME>.ko  
+$ dmesg #check if information is printed   
+  
 
 
 
