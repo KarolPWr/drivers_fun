@@ -4,7 +4,7 @@
 
 From the Makefile directory, as superuser  
 $ make all  
-$ insmod <NAME>.ko  
+$ insmod MODULE_NAME.ko  
 $ dmesg #check if information is printed   
   
 
