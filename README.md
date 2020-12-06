@@ -1,6 +1,9 @@
 # drivers_fun
 
-## Running examples
+## Running examples  
+
+Running examples may require installing kernel headers!   
+https://www.raspberrypi.org/forums/viewtopic.php?t=154749  
 
 From the Makefile directory, as superuser  
 $ make all  
